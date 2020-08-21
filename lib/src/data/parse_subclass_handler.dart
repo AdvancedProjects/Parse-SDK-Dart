@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 typedef ParseObjectConstructor = ParseObject Function();
 typedef ParseUserConstructor = ParseUser Function(

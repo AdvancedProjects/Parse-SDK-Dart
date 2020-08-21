@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 List<dynamic> _convertJSONArrayToList(List<dynamic> array) {
   final List<dynamic> list = <dynamic>[];

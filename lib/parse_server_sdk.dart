@@ -1,4 +1,4 @@
-library flutter_parse_sdk;
+library dart_parse_sdk;
 
 import 'dart:async';
 import 'dart:convert';

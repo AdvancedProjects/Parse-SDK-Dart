@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 // Library
 const String keySdkVersion = '1.0.27';

@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 // ignore_for_file: always_specify_types
 class ParseObject extends ParseBase implements ParseCloneable {

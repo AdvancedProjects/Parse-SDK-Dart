@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 class _XXTeaEncoder extends Converter<Map<String, dynamic>, String> {
   _XXTeaEncoder(this.key);

@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 /// Handles any errors returned in response
 ParseResponse buildErrorResponse(ParseResponse response, Response apiResponse) {

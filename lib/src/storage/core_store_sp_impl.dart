@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 class CoreStoreSharedPrefsImp implements CoreStore {
   CoreStoreSharedPrefsImp._internal(this._store);

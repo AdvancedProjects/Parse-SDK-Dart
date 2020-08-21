@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 class ParseInstallation extends ParseObject {
   /// Creates an instance of ParseInstallation
