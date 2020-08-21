@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 class ParseUser extends ParseObject implements ParseCloneable {
   /// Creates an instance of ParseUser
@@ -76,7 +76,8 @@ class ParseUser extends ParseObject implements ParseCloneable {
 
   static ParseUser createUser(
       [String username, String password, String emailAddress]) {
-    return ParseUser(username, password, emailAddress);
+    return ParseCoreData.instance
+        .createParseUser(username, password, emailAddress);
   }
 
   /// Gets the current user from the server
@@ -118,11 +119,10 @@ class ParseUser extends ParseObject implements ParseCloneable {
     try {
       final Uri url = getSanitisedUri(_client, '$keyEndPointUserName');
       final Response response = await _client.get(url, headers: headers);
-      return await _handleResponse(this, response,
-          ParseApiRQ.currentUser, _debug, parseClassName);
+      return await _handleResponse(
+          this, response, ParseApiRQ.currentUser, _debug, parseClassName);
     } on Exception catch (e) {
-      return handleException(
-          e, ParseApiRQ.currentUser, _debug, parseClassName);
+      return handleException(e, ParseApiRQ.currentUser, _debug, parseClassName);
     }
   }
 
@@ -178,13 +178,14 @@ class ParseUser extends ParseObject implements ParseCloneable {
         keyVarUsername: username,
         keyVarPassword: password
       };
-
+      final String installationId = await _getInstallationId();
       final Uri url = getSanitisedUri(_client, '$keyEndPointLogin',
           queryParams: queryParams);
       _saveChanges();
       final Response response =
           await _client.get(url, headers: <String, String>{
         keyHeaderRevocableSession: '1',
+        if (installationId != null) keyHeaderInstallationId: installationId,
       });
 
       return await _handleResponse(
@@ -328,6 +329,19 @@ class ParseUser extends ParseObject implements ParseCloneable {
     }
   }
 
+  @override
+  Future<ParseResponse> update() async {
+    if (objectId == null) {
+      return await signUp();
+    } else {
+      final ParseResponse response = await super.update();
+      if (response.success) {
+        await _onResponseSuccess();
+      }
+      return response;
+    }
+  }
+
   Future<void> _onResponseSuccess() async {
     await saveInStorage(keyParseStoreUser);
   }
@@ -413,7 +427,8 @@ class ParseUser extends ParseObject implements ParseCloneable {
     }
   }
 
-  static ParseUser _getEmptyUser() => ParseUser(null, null, null);
+  static ParseUser _getEmptyUser() =>
+      ParseCoreData.instance.createParseUser(null, null, null);
 
   static Future<String> _getInstallationId() async {
     final ParseInstallation parseInstallation =

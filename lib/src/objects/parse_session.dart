@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 class ParseSession extends ParseObject implements ParseCloneable {
   ParseSession({bool debug, ParseHTTPClient client}) : super(keyClassSession) {
@@ -30,10 +30,8 @@ class ParseSession extends ParseObject implements ParseCloneable {
   set installationId(String installationId) =>
       set<String>(keyVarInstallationId, installationId);
 
-
   Future<ParseResponse> getCurrentSessionFromServer() async {
     try {
-
       const String path = '$keyEndPointSessions/me';
       final Uri url = getSanitisedUri(_client, path);
 

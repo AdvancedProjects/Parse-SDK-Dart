@@ -1,19 +1,30 @@
 
-![Parse Logo](https://upload.wikimedia.org/wikipedia/commons/1/17/Google-flutter-logo.png)![Flutter Logo](https://i2.wp.com/blog.openshift.com/wp-content/uploads/parse-server-logo-1.png?fit=200%2C200&ssl=1&resize=350%2C200)
+![Dart Logo](https://dart.dev/assets/shared/dart-logo-for-shares.png?2)![Parse Logo](https://i2.wp.com/blog.openshift.com/wp-content/uploads/parse-server-logo-1.png?fit=200%2C200&ssl=1&resize=350%2C200)
 
-## Parse For Flutter! 
-Hi, this is a Flutter plugin that allows communication with a Parse Server, (https://parseplatform.org) either hosted on your own server or another, like (http://Back4App.com).
+## Parse For Dart! 
+This is a Dart package that allows communication with a Parse Server, (https://parseplatform.org) either hosted on your own server or another, like (http://Back4App.com).
 
-This is a work in project and we are consistently updating it. Please let us know if you think anything needs changing/adding, and more than ever, please do join in on this project (Even if it is just to improve our documentation.
+This project is based on the [Parse SDK for Flutter](https://github.com/parse-community/Parse-SDK-Flutter) (version 1.0.27) and tries to provide a way of accessing the Parse Server in a Dart project,
+while keeping the as similar to the original repository as possible.   
 
-## Join in!
-Want to get involved? Join our Slack channel and help out! (http://flutter-parse-sdk.slack.com)
+This project is absolutely work in progress. Please let us know if you think anything needs changing/adding, and more than ever, please do join in on this project. (Even if it is just to improve our documentation)
+
+### Not working yet: (Known problems)
+
+- downloading a File
+- setting some information in the Instalation table.
+- CoreStoreSharedPrefsImp is not implemented
+- LiveQuery
+- LiveList
 
 ## Getting Started
 To install, either add to your pubspec.yaml
 ```yml
 dependencies:  
-    parse_server_sdk: ^1.0.26
+  parse_server_sdk:
+    git:
+      url: git://github.com/AdvancedProjects/Parse-SDK-Dart
+      ref: release/1.0.27
 ```
 or clone this repository and add to your project. As this is an early development with multiple contributors, it is probably best to download/clone and keep updating as an when a new feature is added.
 
@@ -48,6 +59,15 @@ It's possible to add other parameters to work with your instance of Parse Server
         securityContext: securityContext, // Again, required for some setups
 	coreStore: await CoreStoreSharedPrefsImp.getInstance()); // Local data storage method. Will use SharedPreferences instead of Sembast as an internal DB
 ```
+
+
+#### Early Web support
+Currently this requires adding `X-Parse-Installation-Id` as an allowed header to parse-server.
+When running directly via docker, set the env var `PARSE_SERVER_ALLOW_HEADERS=X-Parse-Installation-Id`.
+When running via express, set [ParseServerOptions](https://parseplatform.org/parse-server/api/master/ParseServerOptions.html) `allowHeaders: ['X-Parse-Installation-Id']`.
+
+Be aware that for web ParseInstallation does include app name, version or package identifier.
+
 
 ## Objects
 You can create custom objects by calling:
@@ -98,7 +118,7 @@ The features available are:-
  * Array Operators
 
 ## Custom Objects
-You can create your own ParseObjects or convert your existing objects into Parse Objects by doing the following:
+You can create your own `ParseObjects` or convert your existing objects into Parse Objects by doing the following:
 
 ```dart
 class DietPlan extends ParseObject implements ParseCloneable {
@@ -119,6 +139,26 @@ class DietPlan extends ParseObject implements ParseCloneable {
   
 ```
 
+When receiving an `ParseObject` from the SDK, you can often provide an instance of your custom object as an copy object.
+To always use your custom object class, you can register your subclass at the initialization of the SDK.
+```dart
+Parse().initialize(
+   ...,
+   registeredSubClassMap: <String, ParseObjectConstructor>{
+     'Diet_Plans': () => DietPlan(),
+   },
+   parseUserConstructor: (username, password, emailAddress, {client, debug, sessionToken}) => CustomParseUser(username, password, emailAddress),
+);
+```
+Additionally you can register `SubClasses` after the initialization of the SDK.
+```dart
+ParseCoreData().registerSubClass('Diet_Plans', () => DietPlan());
+ParseCoreData().registerUserSubClass((username, password, emailAddress, {client, debug, sessionToken}) => CustomParseUser(username, password, emailAddress));
+```
+Providing a `ParseObject` as described above should still work, even if you have registered a different `SubClass`.
+
+For custom file classes have a lock at [here](#File).
+
 ## Add new values to objects
 To add a variable to an object call and retrieve it, call
 
@@ -128,7 +168,7 @@ var randomInt = dietPlan.get<int>('RandomInt');
 ```
 
 ## Save objects using pins
-You can now save an object by calling .pin() on an instance of an object
+You can now save an object by calling `.pin()` on an instance of an object
 
 ```dart
 dietPlan.pin();
@@ -229,6 +269,26 @@ if (response.success) {
 }
 ```
 
+if you want to find objects that match one of several queries, you can use __QueryBuilder.or__ method to construct a query that is an OR of the queries passed in. For instance if you want to find players who either have a lot of wins or a few wins, you can do:
+```dart
+ParseObject playerObject = ParseObject("Player");
+
+QueryBuilder<ParseObject> lotsOfWins =
+    QueryBuilder<ParseObject>(playerObject))
+      ..whereGreaterThan('wins', 50);
+
+QueryBuilder<ParseObject> fewWins =
+    QueryBuilder<ParseObject>(playerObject)
+      ..whereLessThan('wins', 5);
+
+QueryBuilder<ParseObject> mainQuery = QueryBuilder.or(
+      playerObject,
+      [lotsOfWins, fewWins],
+    );
+
+var apiResponse = await mainQuery.query();
+```
+
 The features available are:-
  * Equals
  * Contains
@@ -245,6 +305,10 @@ The features available are:-
  * WithinKilometers
  * WithinRadians
  * WithinGeoBox
+ * MatchesQuery
+ * DoesNotMatchQuery
+ * MatchesKeyInQuery
+ * DoesNotMatchKeyInQuery
  * Regex
  * Order
  * Limit
@@ -286,6 +350,47 @@ QueryBuilder<ParseObject> queryComment =
       ..whereDoesNotMatchQuery('post', queryPost);
 
 var apiResponse = await queryComment.query();
+```
+
+You can use the __whereMatchesKeyInQuery__ method to get objects where a key matches the value of a key in a set of objects resulting from another query. For example, if you have a class containing sports teams and you store a user’s hometown in the user class, you can issue one query to find the list of users whose hometown teams have winning records. The query would look like::
+
+```dart
+QueryBuilder<ParseObject> teamQuery =
+    QueryBuilder<ParseObject>(ParseObject('Team'))
+      ..whereGreaterThan('winPct', 0.5);
+
+QueryBuilder<ParseUser> userQuery =
+    QueryBuilder<ParseUser>ParseUser.forQuery())
+      ..whereMatchesKeyInQuery('hometown', 'city', teamQuery);
+
+var apiResponse = await userQuery.query();
+```
+
+Conversely, to get objects where a key does not match the value of a key in a set of objects resulting from another query, use __whereDoesNotMatchKeyInQuery__. For example, to find users whose hometown teams have losing records:
+
+```dart
+QueryBuilder<ParseObject> teamQuery =
+    QueryBuilder<ParseObject>(ParseObject('Team'))
+      ..whereGreaterThan('winPct', 0.5);
+
+QueryBuilder<ParseUser> losingUserQuery =
+    QueryBuilder<ParseUser>ParseUser.forQuery())
+      ..whereDoesNotMatchKeyInQuery('hometown', 'city', teamQuery);
+
+var apiResponse = await losingUserQuery.query();
+```
+
+To filter rows based on objectId’s from pointers in a second table, you can use dot notation:
+```dart
+QueryBuilder<ParseObject> rolesOfTypeX =
+    QueryBuilder<ParseObject>(ParseObject('Role'))
+      ..whereEqualTo('type', 'x');
+
+QueryBuilder<ParseObject> groupsWithRoleX =
+    QueryBuilder<ParseObject>(ParseObject('Group')))
+      ..whereMatchesKeyInQuery('objectId', 'belongsTo.objectId', rolesOfTypeX);
+
+var apiResponse = await groupsWithRoleX.query();
 ```
 
 ## Counting Objects
@@ -430,10 +535,17 @@ LiveQuery server.
 liveQuery.client.unSubscribe(subscription);
 ```
 
+__Disconnection__
+In case the client's connection to the server breaks,
+LiveQuery will automatically try to reconnect.
+LiveQuery will wait at increasing intervals between reconnection attempts.
+By default, these intervals are set to `[0, 500, 1000, 2000, 5000, 10000]` for mobile and `[0, 500, 1000, 2000, 5000]` for web.
+You can change these by providing a custom list using the `liveListRetryIntervals` parameter at `Parse.initialize()` ("-1" means "do not try to reconnect").
+
 ## ParseLiveList
 ParseLiveList makes implementing a dynamic List as simple as possible.
 
-
+#### General Use
 It ships with the ParseLiveList class itself, this class manages all elements of the list, sorts them,
 keeps itself up to date and Notifies you on changes.
 
@@ -451,13 +563,13 @@ ParseLiveListWidget<ParseObject>(
   query: query,
   reverse: false,
   childBuilder:
-      (BuildContext context, bool failed, ParseObject loadedData) {
-    if (failed) {
+      (BuildContext context, ParseLiveListElementSnapshot<ParseObject> snapshot) {
+    if (snapshot.failed) {
       return const Text('something went wrong!');
-    } else if (loadedData != null) {
+    } else if (snapshot.hasData) {
       return ListTile(
         title: Text(
-          loadedData.get("text"),
+          snapshot.loadedData.get("text"),
         ),
       );
     } else {
@@ -487,8 +599,17 @@ ParseLiveListWidget<ParseObject>(
   duration: Duration(seconds: 1),
 );
 ```
+### included Sub-Objects
+By default, ParseLiveQuery will provide you with all the objects you included in your Query like this:
+```dart
+queryBuilder.includeObject(/*List of all the included sub-objects*/);
+```
+ParseLiveList will not listen for updates on this objects by default.
+To activate listening for updates on all included objects, add `listenOnAllSubItems: true` to your ParseLiveListWidgets constructor.
+If you want ParseLiveList to listen for updates on only some sub-objects, use `listeningIncludes: const <String>[/*all the included sub-objects*/]` instead.
+Just as QueryBuilder, ParseLiveList supports nested sub-objects too.
 
-Note: To use this features you have to enable [Live Queries](#live-queries) first.
+**NOTE:** To use this features you have to enable [Live Queries](#live-queries) first.
 
 ## Users
 You can create and control users just as normal using this SDK.
@@ -564,6 +685,24 @@ Other user features are:-
             break;
         }
       }
+```
+
+For Google and the example below, we used the library provided at https://pub.dev/packages/google_sign_in
+
+```
+class OAuthLogin {
+  final GoogleSignIn _googleSignIn = GoogleSignIn( scopes: ['email', 'https://www.googleapis.com/auth/contacts.readonly'] );
+  
+  sigInGoogle() async {
+    GoogleSignInAccount account = await _googleSignIn.signIn();
+    GoogleSignInAuthentication authentication = await account.authentication;
+    await ParseUser.loginWith(
+        'google',
+        google(_googleSignIn.currentUser.id, 
+               authentication.accessToken, 
+               authentication.idToken));
+  }
+}
 ```
 
 ## Security for Objects - ParseACL
@@ -690,11 +829,61 @@ QueryBuilder<ParseObject> query =
       ..whereRelatedTo('fruits', 'DietPlan', DietPlan.objectId);
 ```
 
+## File
+There are three different file classes in this SDK:
+- `ParseFileBase` is and abstract class and is the foundation of every file class that can be handled by this SDK.
+- `ParseFile` (former the only file class in the SDK) extends ParseFileBase and is by default used as the file class on every platform but web.
+This class uses a `File` from `dart:io` for storing the raw file.
+- `ParseWebFile` is the equivalent to ParseFile used at Flutter Web.
+This class uses an `Uint8List` for storing the raw file.
+
+These classes are used by default to represent files, but you can also build your own class extending ParseFileBase and provide a custom `ParseFileConstructor` similar to the `SubClasses`.
+
+Have a look at the example application for a small (non web) example.
+
+
+```dart
+//A short example for showing an image from a ParseFileBase
+Widget buildImage(ParseFileBase image){
+  return FutureBuilder<ParseFileBase>(
+    future: image.download(),
+    builder: (BuildContext context,
+    AsyncSnapshot<ParseFileBase> snapshot) {
+      if (snapshot.hasData) {
+        if (kIsWeb) {
+          return Image.memory((snapshot.data as ParseWebFile).file);
+        } else {
+          return Image.file((snapshot.data as ParseFile).file);
+        }
+      } else {
+        return CircularProgressIndicator();
+      }
+    },
+  );
+}
+```
+```dart
+//A short example for storing a selected picture
+//libraries: image_picker (https://pub.dev/packages/image_picker), image_picker_for_web (https://pub.dev/packages/image_picker_for_web)
+PickedFile pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+ParseFileBase parseFile;
+if (kIsWeb) {
+  //Seems weird, but this lets you get the data from the selected file as an Uint8List very easily. 
+  ParseWebFile file = ParseWebFile(null, name: null, url: pickedFile.path);
+  await file.download();
+  parseFile = ParseWebFile(file.file, name: file.name);
+} else {
+  parseFile = ParseFile(File(pickedFile.path));
+}
+someParseObject.set("image", parseFile);
+//This saves the ParseObject as well as all of its children, and the ParseFileBase is such a child. 
+await someParseObject.save();
+```
+
 ## Other Features of this library
 Main:
 * Installation (View the example application)
 * GeoPoints (View the example application)
-* Files (View the example application)
 * Persistent storage
 * Debug Mode - Logging API calls
 * Manage Session ID's tokens
@@ -710,4 +899,4 @@ Objects:
 * Queries
 
 ## Author:-
-This project was authored by Phill Wiggins. You can contact me at phill.wiggins@gmail.com
+The original Flutter project was authored by Phill Wiggins. You can contact him at phill.wiggins@gmail.com

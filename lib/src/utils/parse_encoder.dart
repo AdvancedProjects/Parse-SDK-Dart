@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 /// Custom encoder for DateTime
 dynamic dateTimeEncoder(dynamic item) {
@@ -36,7 +36,7 @@ dynamic parseEncode(dynamic value, {bool full}) {
     return value;
   }
 
-  if (value is ParseFile) {
+  if (value is ParseFileBase) {
     return value;
   }
 

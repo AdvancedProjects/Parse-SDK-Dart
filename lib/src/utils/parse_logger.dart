@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 void logAPIResponse(String className, String type,
     ParseResponse parseResponse) {
@@ -21,7 +21,7 @@ void logAPIResponse(String className, String type,
     responseString += '\nType: ${parseResponse.error.type}';
 
     final String errorOrException =
-        parseResponse.error.isTypeOfException ? 'Exception' : 'Error';
+        parseResponse.error.exception != null ? 'Exception' : 'Error';
 
     responseString += '\n$errorOrException: ${parseResponse.error.message}';
   }

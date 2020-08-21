@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 /// Handles all the ParseObject responses
 ///
@@ -151,6 +151,6 @@ class _ParseResponseBuilder {
   }
 
   bool isHealthCheck(Response apiResponse) {
-    return apiResponse.body == '{\"status\":\"ok\"}';
+    return ['{\"status\":\"ok\"}', 'OK'].contains(apiResponse.body);
   }
 }

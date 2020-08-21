@@ -1,12 +1,10 @@
 import 'package:mockito/mockito.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 
 class MockClient extends Mock implements ParseHTTPClient {}
 
 void main() {
-  SharedPreferences.setMockInitialValues(Map<String, String>());
 
   group('queryBuilder', () {
     test('whereRelatedTo', () async {

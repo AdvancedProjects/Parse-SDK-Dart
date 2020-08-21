@@ -1,4 +1,4 @@
-part of flutter_parse_sdk;
+part of dart_parse_sdk;
 
 /// Creates a custom version of HTTP Client that has Parse Data Preset
 class ParseHTTPClient extends BaseClient {

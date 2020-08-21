@@ -30,6 +30,7 @@ example/lib/ui/
 
 example_livelist/lib/application_constants.dart
 
+.flutter-plugins
 .flutter-plugins-dependencies
 
 .vscode/
