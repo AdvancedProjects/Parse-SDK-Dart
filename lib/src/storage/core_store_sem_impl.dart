@@ -8,13 +8,14 @@ class CoreStoreSembastImp implements CoreStore {
 
   static Future<CoreStore> getInstance(
       {DatabaseFactory factory, String password = 'flutter_sdk'}) async {
+    //TODO: implement
     if (_instance == null) {
       factory ??= databaseFactoryIo;
       final SembastCodec codec = getXXTeaSembastCodec(password: password);
       String dbDirectory = '';
-      if (!parseIsWeb &&
-          (Platform.isIOS || Platform.isAndroid || Platform.isMacOS))
-        dbDirectory = (await getApplicationDocumentsDirectory()).path;
+//      if (!parseIsWeb &&
+//          (Platform.isIOS || Platform.isAndroid || Platform.isMacOS))
+//        dbDirectory = (await getApplicationDocumentsDirectory()).path;
       final String dbPath = path.join('$dbDirectory/parse', 'parse.db');
       final Database db = await factory.openDatabase(dbPath, codec: codec);
       _instance =

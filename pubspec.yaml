@@ -11,18 +11,13 @@ dependencies:
 
   # Networking
   web_socket_channel: ^1.1.0
-  connectivity: ^0.4.9
 
   #Database
   sembast: ^2.4.7+6
   xxtea: ^2.0.3
-  shared_preferences: ^0.5.8
 
   # Utils
-  path_provider: ^1.6.11
   uuid: ^2.2.0
-  package_info: ^0.4.1
-  devicelocale: ^0.3.1
   meta: ^1.1.8
   path: ^1.7.0
 

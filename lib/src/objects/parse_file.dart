@@ -21,39 +21,44 @@ class ParseFile extends ParseFileBase {
   File file;
 
   Future<ParseFile> loadStorage() async {
-    final Directory tempPath = await getTemporaryDirectory();
-
-    if (name == null) {
-      file = null;
-      return this;
-    }
-
-    final File possibleFile = File('${tempPath.path}/$name');
-    // ignore: avoid_slow_async_io
-    final bool exists = await possibleFile.exists();
-
-    if (exists) {
-      file = possibleFile;
-    } else {
-      file = null;
-    }
-
-    return this;
+    //TODO: implement
+    throw UnimplementedError("Not implemented yet!");
+//    final Directory tempPath = await getTemporaryDirectory();
+//
+//    if (name == null) {
+//      file = null;
+//      return this;
+//    }
+//
+//    final File possibleFile = File('${tempPath.path}/$name');
+//    // ignore: avoid_slow_async_io
+//    final bool exists = await possibleFile.exists();
+//
+//    if (exists) {
+//      file = possibleFile;
+//    } else {
+//      file = null;
+//    }
+//
+//    return this;
   }
 
   @override
   Future<ParseFile> download() async {
-    if (url == null) {
-      return this;
-    }
-
-    final Directory tempPath = await getTemporaryDirectory();
-    file = File('${tempPath.path}/$name');
-    await file.create();
-    final Response response = await _client.get(url);
-    await file.writeAsBytes(response.bodyBytes);
-
-    return this;
+    //TODO: implement
+    throw UnimplementedError("Not implemented yet!");
+//
+//    if (url == null) {
+//      return this;
+//    }
+//
+//    final Directory tempPath = await getTemporaryDirectory();
+//    file = File('${tempPath.path}/$name');
+//    await file.create();
+//    final Response response = await _client.get(url);
+//    await file.writeAsBytes(response.bodyBytes);
+//
+//    return this;
   }
 
   /// Uploads a file to Parse Server

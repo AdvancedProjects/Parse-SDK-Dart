@@ -34,7 +34,7 @@ class ParseCoreData {
     _instance = ParseCoreData._init(appId, serverUrl);
 
     _instance.storage ??=
-        store ?? await CoreStoreSharedPrefsImp.getInstance(password: masterKey);
+        store ?? await CoreStoreSembastImp.getInstance(password: masterKey);
 
     if (debug != null) {
       _instance.debug = debug;

@@ -83,9 +83,11 @@ class ParseInstallation extends ParseObject {
     }
 
     //Locale
-    final String locale = parseIsWeb
-        ? ui.window.locale.toString()
-        : await Devicelocale.currentLocale;
+    final String locale = null;
+    //TODO: implement
+//    = parseIsWeb
+//        ? ui.window.locale.toString()
+//        : await Devicelocale.currentLocale;
     if (locale != null && locale.isNotEmpty) {
       set<String>(keyLocaleIdentifier, locale);
     }
@@ -93,12 +95,13 @@ class ParseInstallation extends ParseObject {
     //Timezone
 
     //App info
-    if (!parseIsWeb) {
-      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      set<String>(keyAppName, packageInfo.appName);
-      set<String>(keyAppVersion, packageInfo.version);
-      set<String>(keyAppIdentifier, packageInfo.packageName);
-    }
+    //TODO: implement
+//    if (!parseIsWeb) {
+//      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+//      set<String>(keyAppName, packageInfo.appName);
+//      set<String>(keyAppVersion, packageInfo.version);
+//      set<String>(keyAppIdentifier, packageInfo.packageName);
+//    }
     set<String>(keyParseVersion, keySdkVersion);
   }
 
