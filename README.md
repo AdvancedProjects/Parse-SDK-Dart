@@ -1,19 +1,30 @@
 
-![Parse Logo](https://upload.wikimedia.org/wikipedia/commons/1/17/Google-flutter-logo.png)![Flutter Logo](https://i2.wp.com/blog.openshift.com/wp-content/uploads/parse-server-logo-1.png?fit=200%2C200&ssl=1&resize=350%2C200)
+![Dart Logo](https://dart.dev/assets/shared/dart-logo-for-shares.png?2)![Parse Logo](https://i2.wp.com/blog.openshift.com/wp-content/uploads/parse-server-logo-1.png?fit=200%2C200&ssl=1&resize=350%2C200)
 
-## Parse For Flutter! 
-Hi, this is a Flutter plugin that allows communication with a Parse Server, (https://parseplatform.org) either hosted on your own server or another, like (http://Back4App.com).
+## Parse For Dart! 
+This is a Dart package that allows communication with a Parse Server, (https://parseplatform.org) either hosted on your own server or another, like (http://Back4App.com).
 
-This is a work in progress and we are consistently updating it. Please let us know if you think anything needs changing/adding, and more than ever, please do join in on this project. (Even if it is just to improve our documentation)
+This project is based on the [Parse SDK for Flutter](https://github.com/parse-community/Parse-SDK-Flutter) (version 1.0.27) and tries to provide a way of accessing the Parse Server in a Dart project,
+while keeping the as similar to the original repository as possible.   
 
-## Join in!
-Want to get involved? Join our Slack channel and help out! (http://flutter-parse-sdk.slack.com)
+This project is absolutely work in progress. Please let us know if you think anything needs changing/adding, and more than ever, please do join in on this project. (Even if it is just to improve our documentation)
+
+### Not working yet: (Known problems)
+
+- downloading a File
+- setting some information in the Instalation table.
+- CoreStoreSharedPrefsImp is not implemented
+- LiveQuery
+- LiveList
 
 ## Getting Started
 To install, either add to your pubspec.yaml
 ```yml
 dependencies:  
-    parse_server_sdk: ^1.0.27
+  parse_server_sdk:
+    git:
+      url: git://github.com/AdvancedProjects/Parse-SDK-Dart
+      ref: release/1.0.27
 ```
 or clone this repository and add to your project. As this is an early development with multiple contributors, it is probably best to download/clone and keep updating as an when a new feature is added.
 
@@ -888,4 +899,4 @@ Objects:
 * Queries
 
 ## Author:-
-This project was authored by Phill Wiggins. You can contact me at phill.wiggins@gmail.com
+The original Flutter project was authored by Phill Wiggins. You can contact him at phill.wiggins@gmail.com
