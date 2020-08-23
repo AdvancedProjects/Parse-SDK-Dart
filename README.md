@@ -24,7 +24,7 @@ dependencies:
   parse_server_sdk:
     git:
       url: git://github.com/AdvancedProjects/Parse-SDK-Dart
-      ref: release/1.0.27
+      ref: master
 ```
 or clone this repository and add to your project. As this is an early development with multiple contributors, it is probably best to download/clone and keep updating as an when a new feature is added.
 
