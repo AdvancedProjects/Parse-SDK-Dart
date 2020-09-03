@@ -9,15 +9,14 @@ import 'dart:typed_data';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:meta/meta.dart';
+import 'package:parse_server_sdk/src/network/parse_websocket.dart'
+    as parse_web_socket;
 import 'package:path/path.dart' as path;
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 import 'package:uuid/uuid.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:xxtea/xxtea.dart';
-
-export 'src/network/parse_live_query.dart'
-    if (dart.library.js) 'src/network/parse_live_query_web.dart';
-export 'src/utils/parse_live_list.dart';
 
 part 'package:parse_server_sdk/src/data/core_store.dart';
 part 'package:parse_server_sdk/src/data/parse_subclass_handler.dart';
@@ -27,12 +26,13 @@ part 'package:parse_server_sdk/src/objects/response/parse_response_builder.dart'
 part 'package:parse_server_sdk/src/objects/response/parse_response_utils.dart';
 part 'package:parse_server_sdk/src/objects/response/parse_success_no_results.dart';
 part 'package:parse_server_sdk/src/storage/core_store_sem_impl.dart';
-part 'package:parse_server_sdk/src/storage/core_store_sp_impl.dart';
 part 'package:parse_server_sdk/src/storage/xxtea_codec.dart';
 part 'src/base/parse_constants.dart';
 part 'src/data/parse_core_data.dart';
 part 'src/enums/parse_enum_api_rq.dart';
+part 'src/network/parse_connectivity.dart';
 part 'src/network/parse_http_client.dart';
+part 'src/network/parse_live_query.dart';
 part 'src/network/parse_query.dart';
 part 'src/objects/parse_acl.dart';
 part 'src/objects/parse_base.dart';
@@ -58,6 +58,7 @@ part 'src/utils/parse_file_extensions.dart';
 part 'src/utils/parse_logger.dart';
 part 'src/utils/parse_login_helpers.dart';
 part 'src/utils/parse_utils.dart';
+part 'src/utils/parse_live_list.dart';
 
 class Parse {
   ParseCoreData data;
@@ -69,17 +70,20 @@ class Parse {
   ///
   /// ```
   /// Parse().initialize(
-  //        "PARSE_APP_ID",
-  //        "https://parse.myaddress.com/parse/,
-  //        masterKey: "asd23rjh234r234r234r",
-  //        debug: true,
-  //        liveQuery: true);
-  // ```
+  ///        "PARSE_APP_ID",
+  ///        "https://parse.myaddress.com/parse/,
+  ///        masterKey: "asd23rjh234r234r234r",
+  ///        debug: true,
+  ///        liveQuery: true);
+  /// ```
   Future<Parse> initialize(
     String appId,
     String serverUrl, {
     bool debug = false,
-    String appName = '',
+    String appName,
+    String appVersion,
+    String appPackageName,
+    String locale,
     String liveQueryUrl,
     String clientKey,
     String masterKey,
@@ -91,6 +95,9 @@ class Parse {
     ParseUserConstructor parseUserConstructor,
     ParseFileConstructor parseFileConstructor,
     List<int> liveListRetryIntervals,
+    ParseConnectivityProvider connectivityProvider,
+    String fileDirectory,
+    Stream<void> appResumedStream,
   }) async {
     final String url = removeTrailingSlash(serverUrl);
 
@@ -99,6 +106,9 @@ class Parse {
       url,
       debug: debug,
       appName: appName,
+      appVersion: appVersion,
+      appPackageName: appPackageName,
+      locale: locale,
       liveQueryUrl: liveQueryUrl,
       masterKey: masterKey,
       clientKey: clientKey,
@@ -110,6 +120,9 @@ class Parse {
       parseUserConstructor: parseUserConstructor,
       parseFileConstructor: parseFileConstructor,
       liveListRetryIntervals: liveListRetryIntervals,
+      connectivityProvider: connectivityProvider,
+      fileDirectory: fileDirectory,
+      appResumedStream: appResumedStream,
     );
 
     _hasBeenInitialized = true;
