@@ -23,5 +23,5 @@ dependencies:
 
 dev_dependencies:
   # Testing
-  test: ^1.5.1
+  test: ^1.15.3
   mockito: ^4.1.1
