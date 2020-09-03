@@ -4,7 +4,7 @@
 ## Parse For Dart! 
 This is a Dart package that allows communication with a Parse Server, (https://parseplatform.org) either hosted on your own server or another, like (http://Back4App.com).
 
-This project is based on the [Parse SDK for Flutter](https://github.com/parse-community/Parse-SDK-Flutter) (version 1.0.27) and tries to provide a way of accessing the Parse Server in a Dart project,
+This project is based on the [Parse SDK for Flutter](https://github.com/parse-community/Parse-SDK-Flutter) (version 1.0.28) and tries to provide a way of accessing the Parse Server in a Dart project,
 while keeping the as similar to the original repository as possible.
 
 This project is absolutely work in progress. Please let us know if you think anything needs changing/adding, and more than ever, please do join in on this project. (Even if it is just to improve our documentation)
@@ -24,7 +24,7 @@ dependencies:
   parse_server_sdk:
     git:
       url: git://github.com/AdvancedProjects/Parse-SDK-Dart
-      ref: master
+      ref: release/1.0.28
 ```
 or clone this repository and add to your project. As this is an early development with multiple contributors, it is probably best to download/clone and keep updating as an when a new feature is added.
 
