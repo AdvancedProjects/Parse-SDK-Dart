@@ -16,7 +16,7 @@ class CoreStoreSembastImp implements CoreStore {
 //      if (!parseIsWeb &&
 //          (Platform.isIOS || Platform.isAndroid || Platform.isMacOS))
 //        dbDirectory = (await getApplicationDocumentsDirectory()).path;
-      final String dbPath = path.join('$dbDirectory/parse', 'parse.db');
+      final String dbPath = path.join('${path.current}/parse', 'parse.db');
       final Database db = await factory.openDatabase(dbPath, codec: codec);
       _instance =
           CoreStoreSembastImp._internal(db, StoreRef<String, String>.main());
